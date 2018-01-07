@@ -2,7 +2,19 @@
   "name": "iHaodoo",
   "version": "0.1.0",
   "manifest_version": 2,
-  "description": "Haodoo 扩展"
+  "description": "Haodoo 扩展",
+
+"browser_action": {
+    "default_popup": "popup/pp.html"
+},
+
+"content_scripts": [
+    {
+        "matches": ["*://haodoo.net/*", "*://www.baidu.com/*"],
+        "js": ["lib/jquery-3.2.1.min.js", "ihaodoo.js"]
+    }
+]
+
 }
 
 //解决好读jquery
