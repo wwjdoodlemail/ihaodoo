@@ -8,11 +8,13 @@ $('document').ready(function(){
 function a(){
     let table = $('<table></table>')
 
+    var DATA = data;
+    let s=['type', 'name', 'author', 'link']
     for(let i=0; i<10; i++){
         let tr = $('<tr></tr>')
-        for(let j=0; j<5; j++){
+        for(let j=0; j<3; j++){
             let td = $('<td></td>')
-            td.text('x')
+            td.text(DATA[i][j])
             tr.append(td)
         }
         table.append(tr)

@@ -1,101 +1,88 @@
-function a(){
-    let main = $('<div id="tip"></div>')
-    let css = {
-    'border': 'solid 1px yellow',
-    'border-radius': '5px',
-    'background': '#EEEEEE',
-    }
-    let s = ['updb', 'prc', 'mobi', 'epub', 'zhi epub']
-    for(let i=0; i<s.length; i++){
-        let opt0 = $('<input type="checkbox"/>')
-        opt0.click(function(){
-            p('bb')                
-        })
-        main.append(opt0)
-        main.append($('<label>'+s[i]+'</label>'))
-        main.append($('<br>'))
-    }
-    main.css(css)
-    $('body').append(main)
-    return main
-}
-
 function p( what ){
-    console.log( what )
+    console.log( what );
 }
 
-function $qa( what ){
-    return document.querlSelectorAll( what )
-}
 
-$('document').ready(function(){
-})
-
-function getbook(){
-    let allA = $qa('a')
-
-    for(var i=allA.length; i>0; i--){
+function getBookHref(a){
+    var atype = a.href.split('?')[1].split('&')[0];
+    var ebook = ['M=book', 'M=Share'];
+    if(ebook.includes(atype)){
+        return true;
+    }else{
+        return false
     }
 }
 
-/*
-$('document').ready(function(){
-    $('body').keydown(function(){
-        p(event) 
-        if(event.key === 'z'){
-            p('inject!')
-            myfun()
-        }
-        //console.log(event)
-    })
-})
 
-function myfun(){
-    $('body').mouseover(function(x){
-        p('ax')
-    })
-}
-*/
-/*
-$('document').ready(function(){
-    let min_win = a()
+function flagEBook(){
+    // 1- 标示所有可下载的链接
+    var allA = $('a')
     
-    $('body').mouseover(function(x){
-        p('aix')
-        let tgt = x.target
-        if(x.target.nodeName === 'A'){
-            p('aaa')
-        }
-        if(x.target.nodeName === 'AA'){
-            p(x)
-            p(tgt)
-            //p(x.offsetX)
-            //p("O "+x.target.offsetTop)
-            //p("O "+x.target.offsetLeft)
-            //p("O "+x.target.offsetWidth)
-            //p("C "+x.target.clientTop)
-            //p("s "+x.target.scrollTop)
-            //p('py:'+x.pageY)
-            //p(x.clientX)
-            min_win.css('display', 'inline')
-            //let tipX = tgt.offsetLeft + tgt.offsetWidth
-            let tipX = tgt.screenX
-            let tipY = tgt.offsetTop + tgt.offsetWidth/2
-            min_win.css('left', tipX + 'px')
-            min_win.css('top', tipY + 'px')
-            //min_win.show()
-            //min_win.text(x.target.href)
-            //p(x.target.href)
-        }else{
-            if(tgt.id === 'tip'){
-                //min_win.css('display', 'inline')
-            }else{
-                //min_win.css('display', 'none')
-            }
-        }
-    })
-})
-*/
-function quick_download(){
-    // 
+    // 循环优化，针对一些旧版本浏览器
+    for(var i=allA.length-1; i>=0; i--){
+        if(getBookHref(allA[i])){
+            var style = {'border': 'solid 1px', 'border-radius': '3px'};
+            $(allA[i]).css( style );
+        }           
+    }
 }
+
+
+function initTooltip(){
+    var tooltip = $('<div id="tooltip"></div>');
+    var style = {
+        'position': 'absolute',
+        'top': '100px',
+        'left': '100px',
+        'display': 'inline',
+        'opacity': '0.8',
+        'background': 'yellow'
+    };
+
+    var caption = $('<label id="caption"></label>');
+    tooltip.append(caption);
+
+    var etypes = ['updb', 'prc', 'mobi', 'epub']
+    for(var i=0; i<etypes.length; i++){
+        var item = makeDownloadItem(etypes[i]);
+        tooltip.append(item);
+    }
+    tooltip.css(style);
+    
+    $('body').append(tooltip);
+}
+function makeDownloadItem( name ){
+    var label = $('<label></label>').text(name);
+    var input = $('<input type="checkbox">');
+    var container = $('<div></div>');
+    container.append(label);
+    container.append(input);
+    return container;
+}
+
+function preprocess( evt ){
+    if(evt.target.nodeName === 'A'){
+        if(getBookHref( evt.target )){
+            showHelper(evt.target)
+        }else{
+            p(evt.target.href)
+        }
+    }
+}
+function showHelper(tgt){
+    var top = $(tgt).position().top;
+    var left = $(tgt).position().left + parseInt($(tgt).css('width'), 10);
+    $('#tooltip #caption').text( tgt.innerText );
+    $('#tooltip').css('top', top)
+    $('#tooltip').css('left', left)
+    //$('#tooltip').show()
+    p('---------------');
+    p(tgt);
+}
+
+
+$('document').ready(function(){
+    flagEBook();
+    initTooltip();
+    $('body').mouseover( preprocess );
+});
